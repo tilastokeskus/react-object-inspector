@@ -6,8 +6,6 @@ import ObjectPreview from './ObjectPreview';
 // Constants
 const DEFAULT_ROOT_PATH='root';
 
-// Styles
-import objectStyles from './objectStyles';
 const styles = {
   base: {
     fontFamily: 'Menlo, monospace',
@@ -45,7 +43,9 @@ export default class ObjectInspector extends Component {
     data: PropTypes.object,
     initialExpandedPaths: PropTypes.array, // initial paths of the nodes that are visible
     depth: PropTypes.number.isRequired,
-    path: PropTypes.string // path is dot separated property names to reach the current node
+    path: PropTypes.string, // path is dot separated property names to reach the current node
+    renderDescription: PropTypes.func,
+    renderName: PropTypes.func
   }
 
   static defaultProps = {
@@ -53,7 +53,8 @@ export default class ObjectInspector extends Component {
     data: undefined,
     initialExpandedPaths: undefined,
     depth: 0,
-    path: DEFAULT_ROOT_PATH
+    path: DEFAULT_ROOT_PATH,
+    renderName: name => <span>{name}</span>
   }
 
   constructor(props) {
@@ -151,9 +152,11 @@ export default class ObjectInspector extends Component {
   }
 
   render() {
-
+    const className = this.props.className;
     const data = this.props.data;
     const name = this.props.name;
+    const renderDescription = this.props.renderDescription;
+    const renderName = this.props.renderName;
 
     const setExpanded = (this.props.depth === 0) ? (this.setExpanded.bind(this)) : this.props.setExpanded;
     const getExpanded = (this.props.depth === 0) ? (this.getExpanded.bind(this)) : this.props.getExpanded;
@@ -177,26 +180,30 @@ export default class ObjectInspector extends Component {
                                               depth={this.props.depth + 1}
                                               key={propertyName}
                                               name={propertyName}
-                                              data={propertyValue}></ObjectInspector>);
+                                              data={propertyValue}
+                                              renderDescription={renderDescription}
+                                              renderName={renderName} />);
         }
       }
       propertyNodesContainer = (<div style={styles.propertyNodesContainer}>{propertyNodes}</div>);
     }
 
     return (
-      <div style={styles.base}>
+      <div className={className}>
         <span style={styles.property} onClick={this.handleClick.bind(this)}>
           <span style={{...styles.expandControl, ...styles.unselectable}}>{expandGlyph}</span>
           {(() => {
             if (typeof name !== 'undefined') {
               return (<span>
-                        <span style={objectStyles.name}>{name}</span>
+                        {renderName(name)}
                         <span>: </span>
-                        <ObjectDescription object={data} />
+                        <ObjectDescription object={data} renderDescription={renderDescription} />
                       </span>);
             }
             else{
-              return (<ObjectPreview object={data}/>);
+              return (<ObjectPreview object={data}
+                                     renderDescription={renderDescription}
+                                     renderName={renderName} />);
             }
           })()}
         </span>

@@ -2,14 +2,6 @@ import React, { Component } from 'react';
 
 import ObjectDescription from './ObjectDescription';
 
-// Styles
-import objectStyles from './objectStyles';
-const styles = {
-  preview: {
-    fontStyle: 'italic',
-  }
-}
-
 function intersperse(arr, sep){
   if (arr.length === 0) {
     return [];
@@ -25,7 +17,9 @@ function intersperse(arr, sep){
  */
 export default class ObjectPreview extends Component {
   propTypes: {
-    maxProperties: PropTypes.number; // maximum properties displayed in preview
+    maxProperties: PropTypes.number, // maximum properties displayed in preview
+    renderDescription: PropTypes.func.isRequired,
+    renderName: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -34,14 +28,19 @@ export default class ObjectPreview extends Component {
 
   render() {
     const object = this.props.object;
+    const renderDescription = this.props.renderDescription;
+    const renderName = this.props.renderName;
     if (typeof object !== 'object' || object === null) {
-      return (<ObjectDescription object={object} />);
+      return (<ObjectDescription object={object}
+                                 renderDescription={renderDescription} />);
     }
 
     if (Array.isArray(object)) {
-      return <span style={styles.preview}>[
+      return <span>[
         {intersperse(object.map(function(element, index){
-          return (<ObjectDescription key={index} object={element} />)
+          return (<ObjectDescription key={index}
+                                     object={element}
+                                     renderDescription={renderDescription} />)
         }), ", ")}
       ]</span>;
     }
@@ -60,9 +59,10 @@ export default class ObjectPreview extends Component {
           }
           propertyNodes.push(
             <span key={propertyName}>
-              <span style={objectStyles.name}>{propertyName}</span>
+              {renderName(propertyName)}
               :&nbsp;
-              <ObjectDescription object={propertyValue} />
+              <ObjectDescription object={propertyValue}
+                                 renderDescription={renderDescription} />
               {ellipsis}
             </span>
           );
@@ -71,7 +71,7 @@ export default class ObjectPreview extends Component {
         }
       }
 
-      return (<span style={styles.preview}>
+      return (<span>
                   {'Object {'}
                   {intersperse(propertyNodes, ", ")}
                   {'}'}

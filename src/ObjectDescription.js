@@ -1,43 +1,48 @@
 import React, { Component } from 'react';
 
-// Styles
-import objectStyles from './objectStyles';
-
 /**
  * A short description of the object
  */
 export default class ObjectDescription extends Component{
+  propTypes: {
+    renderDescription: PropTypes.func
+  }
+
+  static defaultProps = {
+    renderDescription: (data, dataType, defaultContent) => (
+      <span className={`object-inspector-${dataType}`}>{defaultContent}</span>
+    )
+  }
+
   render() {
     const object = this.props.object;
+    const renderDescription = this.props.renderDescription;
     switch (typeof object){
       case 'number':
-        return (<span style={objectStyles.value.number}>{object}</span>);
+        return renderDescription(object, 'number', object);
       case 'string':
-        return (<span style={objectStyles.value.string}>&quot;{object}&quot;</span>);
+        return renderDescription(object, 'string', `"${object}"`);
       case 'boolean':
-        return (<span style={objectStyles.value.boolean}>{String(object)}</span>);
+        return renderDescription(object, 'boolean', String(object));
       case 'undefined':
-        return (<span style={objectStyles.value.undefined}>undefined</span>);
+        return renderDescription(object, 'undefined', 'undefined');
       case 'object':
         if(object === null){
-          return (<span style={objectStyles.value.null}>null</span>)
+          return renderDescription(object, 'null', 'null');
         }
         if(object instanceof Date){
-          return (<span>{object.toString()}</span>);
+          return renderDescription(object, 'date', object.toString());
         }
         if(Array.isArray(object)){
-          return (<span>{`Array[${object.length}]`}</span>);
+          return renderDescription(object, 'array', `Array[${object.length}]`);
         }
-        return (<span>Object</span>);
+        return renderDescription(object, 'object', 'Object');
       case 'function':
-        return (<span>
-                  <span style={objectStyles.value.function.keyword}>function</span>
-                  <span style={objectStyles.value.function.name}>&nbsp;{object.name}()</span>
-                </span>);
+        return renderDescription(object, 'function', `function ${object.name}()`);
       case 'symbol':
-        return (<span style={objectStyles.value.symbol}>Symbol()</span>)
+        return renderDescription(object, 'symbol', 'Symbol()');
       default:
-        return (<span></span>);
+        return renderDescription(object, 'unknown', '');
     }
   }
 }
