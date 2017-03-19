@@ -197,13 +197,15 @@ export default class ObjectInspector extends Component {
               return (<span>
                         {renderName(name)}
                         <span>: </span>
-                        <ObjectDescription object={data} renderDescription={renderDescription} />
+                        <ObjectDescription object={data}
+                                           renderDescription={renderDescription} />
                       </span>);
             }
             else{
               return (<ObjectPreview object={data}
                                      renderDescription={renderDescription}
-                                     renderName={renderName} />);
+                                     renderName={renderName}
+                                     maxProperties={10} />);
             }
           })()}
         </span>
