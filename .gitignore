@@ -6,4 +6,6 @@ jsconfig.json
 react-codemod
 dev
 lib
+build
+.idea
 gh-pages/
