@@ -57,11 +57,13 @@ export default class ObjectPreview extends Component {
               && Object.keys(object).length > this.props.maxProperties) {
             ellipsis = (<span key={'ellipsis'}>…</span>);
           }
+          const valueParts = propertyValue.split('\n');
+          const value = valueParts[0] + (valueParts.length > 1 ? ' ...' : '');
           propertyNodes.push(
             <span key={propertyName}>
               {renderName(propertyName)}
               :&nbsp;
-              <ObjectDescription object={propertyValue}
+              <ObjectDescription object={value}
                                  renderDescription={renderDescription} />
               {ellipsis}
             </span>
